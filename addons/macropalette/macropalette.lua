@@ -149,32 +149,46 @@ ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
 	--	end
 	--end
 	
-    if (imgui.Begin('macropalette', macropalette_window.is_open)) then
-        
-		imgui.Text("Pages      ")
-		imgui.SameLine();
-		imgui.Spacing();
-		imgui.SameLine();
-		
-		macropalette_config.settings.tabs.names:each(function(tab, tab_index) 
-			local displayTab = tab .. string.rep(' ', 8 - #tab)
-			if imgui.SmallButton(displayTab) then
-				runtime_config.tab = string.trim(displayTab)
-				runtime_config.tab_type = macropalette_config.settings.tabs.types[string.trim(displayTab)]
-			end
-			imgui.SameLine();
-		end);
-		
-		
-		imgui.NewLine();
-		imgui.Text(runtime_config.tab);
-		
-		imgui.SameLine();
-		imgui.Text(macropalette_config.settings.buttonslabel);
-		if runtime_config.tab_type == "JobSettings" then
+    if imgui.Begin('macropalette', macropalette_window.is_open) then
+	
+	
+		if imgui.BeginTable('macropalette_table', macropalette_config.settings.buttonsperrow+1, ImGuiTableFlags_SizingFixedFit, 0, 0) then
+			--imgui.Text("Pages");
+			imgui.TableNextColumn();
+			imgui.Text("Pages");
+			imgui.TableNextColumn();
 			
-		elseif runtime_config.tab_type == "Macros" then
-			macros.draw_tab(runtime_config, macropalette_config, runtime_config)
+			macropalette_config.settings.tabs.names:each(function(tab, tab_index) 
+				local displayTab = tab .. string.rep(' ', 8 - #tab)
+				if imgui.SmallButton(displayTab) then
+					runtime_config.tab = string.trim(displayTab)
+					runtime_config.tab_type = macropalette_config.settings.tabs.types[string.trim(displayTab)]
+				end
+				imgui.TableNextColumn();
+			end);
+			
+			
+			imgui.TableNextRow(0,0);
+			imgui.Text(runtime_config.tab);
+			imgui.TableNextColumn();
+			
+			--imgui.Text(macropalette_config.settings.buttonslabel);
+			imgui.TableNextRow(0,0);
+			
+			if runtime_config.tab_type == "JobSettings" then
+				
+			elseif runtime_config.tab_type == "Macros" then
+				macros.draw_table(runtime_config, macropalette_config, runtime_config)
+			end
+			
+			
+			if runtime_config.tab_type == "JobSettings" then
+				
+			elseif runtime_config.tab_type == "Macros" then
+				macros.draw_after_table(runtime_config, macropalette_config, runtime_config)
+			end
+			
+			imgui.EndTable();
 		end
 		
 	end

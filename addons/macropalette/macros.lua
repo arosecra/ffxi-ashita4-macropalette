@@ -6,9 +6,10 @@ local macrolocator = require('macrolocator');
 
 local macros = {}
 
-macros.draw_tab = function(macropalette_window, macropalette_config, runtime_config) 
+macros.draw_table = function(macropalette_window, macropalette_config, runtime_config) 
 	macropalette_config.settings.rows.names:each(function(row_name, row_index)
 
+		imgui.TableNextColumn();
 		local row_label = ""
 		if tonumber(row_index) == tonumber(runtime_config.current_row) then
 			row_label = "(*) " .. row_name
@@ -18,7 +19,7 @@ macros.draw_tab = function(macropalette_window, macropalette_config, runtime_con
 		row_label = row_label .. string.rep(" ", 8-#row_name)
 		
 		imgui.Text(row_label);
-		imgui.SameLine();
+		imgui.TableNextColumn();
 		
 		local macro_ids = macrolocator.get_active_macro_ids(macropalette_config, runtime_config, row_name)
 		
@@ -45,11 +46,14 @@ macros.draw_tab = function(macropalette_window, macropalette_config, runtime_con
 				end	
 			end
 			
-			imgui.SameLine();			
+			imgui.TableNextColumn();			
 		end
-		imgui.NewLine();
+		imgui.TableNextRow(0,0);
 		
 	end);
+end
+
+macros.draw_after_table = function(macropalette_window, macropalette_config, runtime_config) 
 end
 
 
