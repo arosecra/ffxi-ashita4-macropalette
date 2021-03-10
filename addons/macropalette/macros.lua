@@ -3,11 +3,12 @@ local common = require('common');
 local imgui = require('imgui');
 local macrorunner = require('macrorunner');
 local macrolocator = require('macrolocator');
+local helper = require('helper')
 
 local macros = {}
 
-macros.draw_table = function(macropalette_window, macropalette_config, runtime_config) 
-	macropalette_config.settings.rows.names:each(function(row_name, row_index)
+macros.draw_table = function(runtime_config) 
+	helper.get_string_table(addon.name, "settings", "rows.names"):each(function(row_name, row_index)
 
 		imgui.TableNextColumn();
 		local row_label = ""
@@ -21,13 +22,13 @@ macros.draw_table = function(macropalette_window, macropalette_config, runtime_c
 		imgui.Text(row_label);
 		imgui.TableNextColumn();
 		
-		local macro_ids = macrolocator.get_active_macro_ids(macropalette_config, runtime_config, row_name)
+		local macro_ids = macrolocator.get_active_macro_ids(runtime_config, row_name)
 		
-		for i=1,macropalette_config.settings.buttonsperrow do
-			local macro = macrolocator.get_macro_by_id(macropalette_config, macro_ids[i])
+		for i=1,8 do
+			local macro = macrolocator.get_macro_by_id(macro_ids[i])
 			local label = string.rep(' ', 8)
-			if macro.Spacer == nil then
-				label = macro.Name
+			if macro.spacer == nil then
+				label = macro.name
 				if #label > 12 then
 					label = string.sub(label,1,8) .. '..'
 				else
@@ -40,10 +41,8 @@ macros.draw_table = function(macropalette_window, macropalette_config, runtime_c
 				end	
 				imgui.PopID(macro_ids[i])
 				
-			elseif macro.Spacer ~= nil then
-				if (imgui.SmallButton(label)) then 
-					print(label)
-				end	
+			elseif macro.spacer ~= nil then
+				imgui.Text("")
 			end
 			
 			imgui.TableNextColumn();			
@@ -53,7 +52,7 @@ macros.draw_table = function(macropalette_window, macropalette_config, runtime_c
 	end);
 end
 
-macros.draw_after_table = function(macropalette_window, macropalette_config, runtime_config) 
+macros.draw_after_table = function(runtime_config) 
 end
 
 

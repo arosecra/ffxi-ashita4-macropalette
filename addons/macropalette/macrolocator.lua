@@ -1,14 +1,16 @@
 
 local common = require('common');
+local helper = require('helper');
+
+
 local macrolocator = {}
 
-
-macrolocator.get_active_macro_ids = function(macropalette_config, runtime_config, row_name)
+macrolocator.get_active_macro_ids = function(runtime_config, row_name)
 	local macro_names = T{}
-	local combined_name = runtime_config.tab .. "_" .. row_name
-	local row_layout = macropalette_config.settings.tabs.layouts[combined_name]
+	local combined_name = runtime_config.tab .. "." .. row_name
+	local row_layout = helper.get_string_table(addon.name, "macro.tabs.layout", "tabs." .. combined_name)
 	
-	for i=1,macropalette_config.settings.buttonsperrow do
+	for i=1,8 do
 		if row_layout ~= nil 
 			and row_layout[i] ~= nil 
 			and row_layout[i] ~= "" 
@@ -24,13 +26,19 @@ macrolocator.get_active_macro_ids = function(macropalette_config, runtime_config
 end
 
 
-macrolocator.get_macro_by_id = function(macropalette_config, macro_id)
+macrolocator.get_macro_by_id = function(macro_id)
 	local macro = {
-		Spacer = true
-	}
-	
-	if macropalette_config.macros[macro_id] ~= nil then
-		macro = macropalette_config.macros[macro_id]
+		spacer = true
+	} 
+	local macro_name = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".name");
+	if macro_name ~= nil then
+		macro.name = macro_name
+		macro.command = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".command");
+		macro.cycle = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".cycle");
+		macro.script = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".script");
+		macro.send_to = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".send_to");
+		macro.send_target = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".send_target");
+		macro.spacer = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".spacer");
 	end
 	
 	return macro
