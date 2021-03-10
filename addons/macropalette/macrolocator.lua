@@ -16,7 +16,30 @@ macrolocator.get_active_macro_ids = function(runtime_config, row_name)
 			and row_layout[i] ~= "" 
 			and row_layout[i] ~= "job"  then
 			macro_names:append(row_layout[i])
-		else 
+		elseif row_layout ~= nil 
+			and row_layout[i] ~= nil
+			and row_layout[i] == "job" then
+		
+			local job = runtime_config[row_name .. '.MainJob']
+			local subjob = runtime_config[row_name .. '.SubJob']
+			
+			if job ~= nil and subjob ~= nil then
+			local job_macros = helper.get_string_table(addon.name, "macro.tabs.layout", "tabs.job." .. job .. "." .. runtime_config.tab);
+			local job_subjob_macros = helper.get_string_table(addon.name, "macro.tabs.layout", "tabs.job." .. job .. "_" .. subjob .. "." .. runtime_config.tab)
+		
+			if job_subjob_macros ~= nil
+			   and job_subjob_macros[i] ~= nil then
+			   macro_names:append(job_subjob_macros[i])
+			elseif job_macros ~= nil
+			   and job_macros[i] ~= nil then
+			   macro_names:append(jobs_macros[i])
+			else
+				macro_names:append("")
+			end
+			else
+				macro_names:append("")
+			end
+		else
 			macro_names:append("")
 		end
 	end

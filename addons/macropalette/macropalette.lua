@@ -46,6 +46,12 @@ ashita.events.register('plugin_event', 'macropalette_plugin_event_cb', function 
     e.blocked = true;
 end);
 
+ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (isRenderingBackBuffer)
+
+    
+	
+end);
+
 ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
 
 	local buttonsperrow = tonumber(AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "buttonsperrow"));
