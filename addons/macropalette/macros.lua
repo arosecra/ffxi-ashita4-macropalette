@@ -9,7 +9,7 @@ local macros = {}
 
 macros.draw_table = function(runtime_config) 
 	helper.get_string_table(addon.name, "settings", "rows.names"):each(function(row_name, row_index)
-
+		
 		imgui.TableNextColumn();
 		local row_label = ""
 		if tonumber(row_index) == tonumber(runtime_config.current_row) then
@@ -23,7 +23,7 @@ macros.draw_table = function(runtime_config)
 		imgui.TableNextColumn();
 		
 		local macro_ids = macrolocator.get_active_macro_ids(runtime_config, row_name)
-		
+
 		for i=1,8 do
 			local macro = macrolocator.get_macro_by_id(macro_ids[i])
 			local label = string.rep(' ', 8)
@@ -34,7 +34,7 @@ macros.draw_table = function(runtime_config)
 				else
 					label = label .. string.rep(' ', 8 - #label)
 				end
-			
+				
 				imgui.PushID(macro_ids[i])
 				if (imgui.SmallButton(label)) then 
 					print(label)
