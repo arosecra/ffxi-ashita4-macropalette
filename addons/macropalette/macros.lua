@@ -3,12 +3,12 @@ local common = require('common');
 local imgui = require('imgui');
 local macrorunner = require('macrorunner');
 local macrolocator = require('macrolocator');
-local helper = require('helper')
+local libs2config = require('arosecra/config');
 
 local macros = {}
 
 macros.draw_table = function(runtime_config) 
-	helper.get_string_table(addon.name, "settings", "rows.names"):each(function(row_name, row_index)
+	libs2config.get_string_table(addon.name, "settings", "rows.names"):each(function(row_name, row_index)
 		
 		imgui.TableNextColumn();
 		local row_label = ""

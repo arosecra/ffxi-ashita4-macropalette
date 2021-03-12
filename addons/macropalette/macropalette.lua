@@ -11,8 +11,9 @@ local common = require('common');
 local macros = require('macros');
 local macrorunner = require('macrorunner');
 local macrolocator = require('macrolocator');
-local helper = require('helper');
-local jobs = require('res/jobs');
+local libs2imgui = require('arosecra/imgui');
+local libs2config = require('arosecra/config');
+local jobs = require('arosecra/jobs');
 
 local macropalette_window = {
     is_open                 = { true }
@@ -25,7 +26,7 @@ local runtime_config = {
 };
 
 ashita.events.register('load', 'macropalette_load_cb', function ()
-    print("[Example] 'load' event was called.");
+    print("[macropalette] 'load' event was called.");
 	AshitaCore:GetConfigurationManager():Load(addon.name, 'macropalette\\macropalette.ini');
 	runtime_config.tab = AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "defaulttab");
 	runtime_config.tab_type = AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "tabs.type." .. runtime_config.tab);
@@ -35,7 +36,7 @@ ashita.events.register('command', 'macropalette_command_cb', function (e)
     if (not e.command:startswith('/macropalette') and not e.command:startswith('/mp')) then
 		return;
     end
-    print("[Example] Blocking '/mp' command!");
+    print("[macropalette] Blocking '/mp' command!");
     e.blocked = true;
 end);
 
@@ -43,7 +44,7 @@ ashita.events.register('plugin_event', 'macropalette_plugin_event_cb', function 
     if (not e.name:startswith('/macropalette') and not e.name:startswith('/mp')) then
 		return;
     end
-    print("[Example] Blocking '/mp' command!");
+    print("[macropalette] Blocking '/mp' command!");
     e.blocked = true;
 end);
 
@@ -72,15 +73,18 @@ ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (i
 end);
 
 ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
-
+	local windowStyleFlags = libs2imgui.gui_style_table_to_var("imguistyle", addon.name, "window.style");
+	local tableStyleFlags = libs2imgui.gui_style_table_to_var("imguistyle", addon.name, "table.style");
+	libs2imgui.imgui_set_window(addon.name);
+	
 	local buttonsperrow = tonumber(AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "buttonsperrow"));
-    if imgui.Begin(addon.name, macropalette_window.is_open) then
-		if imgui.BeginTable(addon.name, 8+1, ImGuiTableFlags_SizingFixedFit, 0, 0) then
+    if imgui.Begin(addon.name, macropalette_window.is_open, windowStyleFlags) then
+		if imgui.BeginTable(addon.name, 8+1, tableStyleFlags, 0, 0) then
 			imgui.TableNextColumn();
 			imgui.Text("Pages");
 			imgui.TableNextColumn();
 			
-			helper.get_string_table(addon.name, "settings", "tabs.names"):each(function(tab, tab_index) 
+			libs2config.get_string_table(addon.name, "settings", "tabs.names"):each(function(tab, tab_index) 
 				local displayTab = tab .. string.rep(' ', 8 - #tab)
 				if imgui.SmallButton(displayTab) then
 					runtime_config.tab = string.trim(displayTab)
@@ -90,11 +94,11 @@ ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
 			end);
 			
 			imgui.TableNextRow(0,0);
-			--imgui.Text(runtime_config.tab);
 			imgui.TableNextColumn();
+			imgui.Text(runtime_config.tab);
 			imgui.TableNextColumn();
 			
-			helper.get_string_table(addon.name, "settings", "buttonslabel"):each(function(label, label_index)
+			libs2config.get_string_table(addon.name, "settings", "buttonslabel"):each(function(label, label_index)
 			
 				imgui.Text(label);
 				imgui.TableNextColumn();
