@@ -48,6 +48,33 @@ ashita.events.register('plugin_event', 'macropalette_plugin_event_cb', function 
     e.blocked = true;
 end);
 
+ashita.events.register('key_data', 'key_data_callback1', function (e)
+    --print(e.key)
+    if (e.key == 29 or e.key == 56 or e.key == 157 or e.key == 184) then
+        e.blocked = true;
+    end
+end);
+
+ashita.events.register('key_state', 'key_state_callback1', function (e)
+    local ffi = require('ffi');
+    local ptr = ffi.cast('uint8_t*', e.data_raw);
+
+    -- Block left-arrow key presses.. (Blocks game input; repeating.)
+    if (ptr[29] ~= 0) then
+        ptr[29] = 0;
+    end
+    if (ptr[184] ~= 0) then
+        ptr[184] = 0;
+    end
+    if (ptr[56] ~= 0) then
+        ptr[56] = 0;
+    end
+    if (ptr[157] ~= 0) then
+        ptr[157] = 0;
+    end
+end);
+
+
 ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (isRenderingBackBuffer)
 
 	--reset the runtime_config so that we drop old class data
