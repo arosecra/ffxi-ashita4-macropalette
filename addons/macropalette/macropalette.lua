@@ -11,9 +11,9 @@ local common = require('common');
 local macros = require('macros');
 local macrorunner = require('macrorunner');
 local macrolocator = require('macrolocator');
-local libs2imgui = require('arosecra/imgui');
-local libs2config = require('arosecra/config');
-local jobs = require('arosecra/jobs');
+local libs2imgui = require('org_github_arosecra/imgui');
+local libs2config = require('org_github_arosecra/config');
+local jobs = require('org_github_arosecra/jobs');
 
 local macropalette_window = {
     is_open                 = { true }

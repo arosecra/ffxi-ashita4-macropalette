@@ -1,6 +1,6 @@
 
 local common = require('common');
-local libs2config = require('arosecra/config');
+local libs2config = require('org_github_arosecra/config');
 
 
 local macrolocator = {}

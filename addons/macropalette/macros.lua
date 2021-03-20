@@ -3,7 +3,7 @@ local common = require('common');
 local imgui = require('imgui');
 local macrorunner = require('macrorunner');
 local macrolocator = require('macrolocator');
-local libs2config = require('arosecra/config');
+local libs2config = require('org_github_arosecra/config');
 
 local macros = {}
 
