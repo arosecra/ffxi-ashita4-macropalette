@@ -88,7 +88,7 @@ ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (i
 	local resourceManager = AshitaCore:GetResourceManager();
 	local player = memoryManager:GetPlayer();
 	local party = memoryManager:GetParty();
-
+	
 	for i=0,5 do
 		local mainjob = jobs[party:GetMemberMainJob(i)];
 		local subjob = jobs[party:GetMemberSubJob(i)];
@@ -100,6 +100,12 @@ ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (i
 end);
 
 ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
+	
+	local playerEntity = GetPlayerEntity();
+	if playerEntity == nil then
+		return;
+	end
+	
 	local windowStyleFlags = libs2imgui.gui_style_table_to_var("imguistyle", addon.name, "window.style");
 	local tableStyleFlags = libs2imgui.gui_style_table_to_var("imguistyle", addon.name, "table.style");
 	libs2imgui.imgui_set_window(addon.name);
