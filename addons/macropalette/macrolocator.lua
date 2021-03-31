@@ -1,5 +1,5 @@
 
-local common = require('common');
+require('common');
 local libs2config = require('org_github_arosecra/config');
 
 
@@ -48,23 +48,5 @@ macrolocator.get_active_macro_ids = function(runtime_config, row_name)
 	return macro_names
 end
 
-
-macrolocator.get_macro_by_id = function(macro_id)
-	local macro = {
-		spacer = true
-	} 
-	local macro_name = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".name");
-	if macro_name ~= nil then
-		macro.name = macro_name
-		macro.command = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".command");
-		macro.cycle = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".cycle");
-		macro.script = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".script");
-		macro.send_to = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".send_to");
-		macro.send_target = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".send_target");
-		macro.spacer = AshitaCore:GetConfigurationManager():GetString(addon.name, "macros", macro_id .. ".spacer");
-	end
-	
-	return macro
-end
 
 return macrolocator

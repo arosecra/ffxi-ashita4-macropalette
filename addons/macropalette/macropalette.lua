@@ -8,12 +8,11 @@ addon.link      = 'https://github.com/arosecra/ffxi-ashita4-macropalette';
 local imgui = require('imgui');
 local common = require('common');
 
-local macros = require('macros');
-local macrorunner = require('macrorunner');
-local macrolocator = require('macrolocator');
+local macropanel = require('macropanel');
 local libs2imgui = require('org_github_arosecra/imgui');
 local libs2config = require('org_github_arosecra/config');
 local jobs = require('org_github_arosecra/jobs');
+local macros_configuration = require('org_github_arosecra/macros/macros_configuration');
 
 local macropalette_window = {
     is_open                 = { true }
@@ -28,6 +27,7 @@ local runtime_config = {
 ashita.events.register('load', 'macropalette_load_cb', function ()
     print("[macropalette] 'load' event was called.");
 	AshitaCore:GetConfigurationManager():Load(addon.name, 'macropalette\\macropalette.ini');
+	macros_configuration.load();
 	runtime_config.tab = AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "defaulttab");
 	runtime_config.tab_type = AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "tabs.type." .. runtime_config.tab);
 end);
@@ -88,7 +88,7 @@ ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (i
 	local resourceManager = AshitaCore:GetResourceManager();
 	local player = memoryManager:GetPlayer();
 	local party = memoryManager:GetParty();
-	
+
 	for i=0,5 do
 		local mainjob = jobs[party:GetMemberMainJob(i)];
 		local subjob = jobs[party:GetMemberSubJob(i)];
@@ -96,27 +96,27 @@ ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (i
 		runtime_config[name .. ".MainJob"] = mainjob;
 		runtime_config[name .. ".SubJob"] = subjob;
 	end
-	
+
 end);
 
 ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
-	
+
 	local playerEntity = GetPlayerEntity();
 	if playerEntity == nil then
 		return;
 	end
-	
+
 	local windowStyleFlags = libs2imgui.gui_style_table_to_var("imguistyle", addon.name, "window.style");
 	local tableStyleFlags = libs2imgui.gui_style_table_to_var("imguistyle", addon.name, "table.style");
 	libs2imgui.imgui_set_window(addon.name);
-	
+
 	local buttonsperrow = tonumber(AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "buttonsperrow"));
     if imgui.Begin(addon.name, macropalette_window.is_open, windowStyleFlags) then
 		if imgui.BeginTable(addon.name, 8+1, tableStyleFlags, 0, 0) then
 			imgui.TableNextColumn();
 			imgui.Text("Pages");
 			imgui.TableNextColumn();
-			
+
 			libs2config.get_string_table(addon.name, "settings", "tabs.names"):each(function(tab, tab_index) 
 				local displayTab = tab .. string.rep(' ', 8 - #tab)
 				if imgui.SmallButton(displayTab) then
@@ -125,36 +125,29 @@ ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
 				end
 				imgui.TableNextColumn();
 			end);
-			
+
 			imgui.TableNextRow(0,0);
 			imgui.TableNextColumn();
 			imgui.Text(runtime_config.tab);
 			imgui.TableNextColumn();
-			
+
 			libs2config.get_string_table(addon.name, "settings", "buttonslabel"):each(function(label, label_index)
-			
 				imgui.Text(label);
 				imgui.TableNextColumn();
-			
 			end);
 			imgui.TableNextRow(0,0);
-			
-			if runtime_config.tab_type == "JobSettings" then
-				
-			elseif runtime_config.tab_type == "Macros" then
-				macros.draw_table(runtime_config)
+
+			if runtime_config.tab_type == "Macros" then
+				macropanel.draw_table(runtime_config)
 			end
-			
-			
-			if runtime_config.tab_type == "JobSettings" then
-				
-			elseif runtime_config.tab_type == "Macros" then
-				macros.draw_after_table(runtime_config)
+
+			if runtime_config.tab_type == "Macros" then
+				macropanel.draw_after_table(runtime_config)
 			end
-			
+
 			imgui.EndTable();
 		end
-		
+
 	end
     imgui.End();
 end);
