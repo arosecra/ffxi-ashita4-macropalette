@@ -25,30 +25,75 @@ macropanel.draw_table = function(runtime_config)
 		local macro_ids = macrolocator.get_active_macro_ids(runtime_config, row_name)
 
 		for i=1,8 do
-			local macro = macros_configuration.get_macro_by_id(macro_ids[i])
-			local label = string.rep(' ', 8)
-			if macro.spacer == nil then
-				label = macro.name
-				if #label > 12 then
-					label = string.sub(label,1,8) .. '..'
+			local macro_id = macro_ids[i];
+			local show_timer = false;
+			if runtime_config.timers[row_name] ~= nil and
+			   runtime_config.timers[row_name][macro_id] ~= nil then
+				
+				if os.time() > runtime_config.timers[row_name][macro_id] then
+					runtime_config.timers[row_name][macro_id] = nil
 				else
-					label = label .. string.rep(' ', 8 - #label)
+					show_timer = true;
 				end
+			end
 
-				imgui.PushID(macro_ids[i])
-				if (imgui.SmallButton(label)) then
-					print(label)
-				end	
-				imgui.PopID(macro_ids[i])
-
-			elseif macro.spacer ~= nil then
-				imgui.Text("")
+			local macro = macros_configuration.get_macro_by_id(macro_id)
+			if show_timer then
+				macropanel.draw_timer(runtime_config, macro, row_name)
+			else
+				macropanel.draw_button(runtime_config, macro, row_name);
 			end
 
 			imgui.TableNextColumn();
 		end
 		imgui.TableNextRow(0,0);
 	end);
+end
+
+macropanel.draw_button = function(runtime_config, macro, row_name)
+	local label = string.rep(' ', 8)
+	if macro.spacer == nil then
+		label = macro.name
+		if #label > 12 then
+			label = string.sub(label,1,8) .. '..'
+		else
+			label = label .. string.rep(' ', 8 - #label)
+		end
+
+		imgui.PushID(macro.macro_id)
+		if (imgui.SmallButton(label)) then
+			print(label)
+			print(macro.recast);
+			if macro.recast ~= nil then
+				if runtime_config.timers[row_name] == nil then
+					runtime_config.timers[row_name] = {};
+				end
+				runtime_config.timers[row_name][macro.macro_id] = os.time() + tonumber(macro.recast);
+			end
+		end	
+		imgui.PopID(macro.macro_id)
+
+	elseif macro.spacer ~= nil then
+		imgui.Text("")
+	end
+end
+
+macropanel.draw_timer = function(runtime_config, macro, row_name)
+	local end_time = runtime_config.timers[row_name][macro.macro_id]
+	local total_time = macro.recast;
+	local start_time = end_time - total_time;
+	local current_time = os.time();
+	local time_spent = current_time - start_time;
+	local time_remaining = total_time - time_spent;
+
+	local percentage = ( time_spent / total_time ) ;
+
+
+	local style = imgui.GetStyle();
+	local framePaddingYBackup = style.FramePadding.y;
+	style.FramePadding.y = 0;
+	imgui.ProgressBar(percentage, {-1.0, 0.0}, tostring(time_remaining));
+	style.FramePadding.y = framePaddingYBackup;
 end
 
 macropanel.draw_after_table = function(runtime_config)

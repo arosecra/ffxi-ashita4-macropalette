@@ -21,7 +21,8 @@ local macropalette_window = {
 local runtime_config = {
 	current_row = 1,
 	tab                     = "Combat",
-	tab_type                = "Macros"
+	tab_type                = "Macros",
+	timers                  = {}
 };
 
 ashita.events.register('load', 'macropalette_load_cb', function ()
@@ -81,8 +82,9 @@ ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (i
 	runtime_config = {
 		current_row = runtime_config.current_row,
 		tab = runtime_config.tab,
-		tab_type = runtime_config.tab_type
-	}
+		tab_type = runtime_config.tab_type,
+		timers = runtime_config.timers
+	};
 
     local memoryManager = AshitaCore:GetMemoryManager();
 	local resourceManager = AshitaCore:GetResourceManager();
@@ -112,7 +114,7 @@ ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
 
 	local buttonsperrow = tonumber(AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "buttonsperrow"));
     if imgui.Begin(addon.name, macropalette_window.is_open, windowStyleFlags) then
-		if imgui.BeginTable(addon.name, 8+1, tableStyleFlags, 0, 0) then
+		if imgui.BeginTable("addon.name", 8+1, tableStyleFlags, 0, 0) then
 			imgui.TableNextColumn();
 			imgui.Text("Pages");
 			imgui.TableNextColumn();
