@@ -62,15 +62,13 @@ macropanel.draw_button = function(runtime_config, macro, row_name)
 
 		imgui.PushID(macro.macro_id)
 		if (imgui.SmallButton(label)) then
-			print(label)
-			print(macro.recast);
 			if macro.recast ~= nil then
 				if runtime_config.timers[row_name] == nil then
 					runtime_config.timers[row_name] = {};
 				end
 				runtime_config.timers[row_name][macro.macro_id] = os.time() + tonumber(macro.recast);
 			end
-		end	
+		end
 		imgui.PopID(macro.macro_id)
 
 	elseif macro.spacer ~= nil then
@@ -87,7 +85,6 @@ macropanel.draw_timer = function(runtime_config, macro, row_name)
 	local time_remaining = total_time - time_spent;
 
 	local percentage = ( time_spent / total_time ) ;
-
 
 	local style = imgui.GetStyle();
 	local framePaddingYBackup = style.FramePadding.y;
