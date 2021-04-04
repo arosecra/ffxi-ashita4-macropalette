@@ -114,7 +114,7 @@ ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
 
 	local buttonsperrow = tonumber(AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "buttonsperrow"));
     if imgui.Begin(addon.name, macropalette_window.is_open, windowStyleFlags) then
-		if imgui.BeginTable("addon.name", 8+1, tableStyleFlags, 0, 0) then
+		if imgui.BeginTable("t3", 8+1, tableStyleFlags, 0, 0) then
 			imgui.TableNextColumn();
 			imgui.Text("Pages");
 			imgui.TableNextColumn();

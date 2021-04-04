@@ -4,6 +4,7 @@ local imgui = require('imgui');
 local macrolocator = require('macrolocator');
 local libs2config = require('org_github_arosecra/config');
 local macros_configuration = require('org_github_arosecra/macros/macros_configuration');
+local macrorunner = require('org_github_arosecra/macros/macrorunner');
 
 local macropanel = {}
 
@@ -37,11 +38,15 @@ macropanel.draw_table = function(runtime_config)
 				end
 			end
 
-			local macro = macros_configuration.get_macro_by_id(macro_id)
-			if show_timer then
-				macropanel.draw_timer(runtime_config, macro, row_name)
-			else
-				macropanel.draw_button(runtime_config, macro, row_name);
+			if macro_id ~= nil and macro_id ~= "" then
+				local macro = macros_configuration.get_macro_by_id(macro_id)
+				if macro.macro_name ~= nil then
+					if show_timer then
+						macropanel.draw_timer(runtime_config, macro, row_name)
+					else
+						macropanel.draw_button(runtime_config, macro, row_name);
+					end
+				end
 			end
 
 			imgui.TableNextColumn();
@@ -51,29 +56,23 @@ macropanel.draw_table = function(runtime_config)
 end
 
 macropanel.draw_button = function(runtime_config, macro, row_name)
-	local label = string.rep(' ', 8)
-	if macro.spacer == nil then
-		label = macro.name
-		if #label > 12 then
-			label = string.sub(label,1,8) .. '..'
-		else
-			label = label .. string.rep(' ', 8 - #label)
-		end
-
-		imgui.PushID(macro.macro_id)
-		if (imgui.SmallButton(label)) then
-			if macro.recast ~= nil then
-				if runtime_config.timers[row_name] == nil then
-					runtime_config.timers[row_name] = {};
-				end
-				runtime_config.timers[row_name][macro.macro_id] = os.time() + tonumber(macro.recast);
-			end
-		end
-		imgui.PopID(macro.macro_id)
-
-	elseif macro.spacer ~= nil then
-		imgui.Text("")
+	local label = macro.macro_name
+	if #label > 12 then
+		label = string.sub(label,1,8) .. '..';
+	else
+		label = label .. string.rep(' ', 8 - #label);
 	end
+	imgui.PushID(row_name .. macro.macro_id)
+	if (imgui.SmallButton(label)) then
+		macrorunner.run_macro(macro, { Name = row_name});
+		if macro.recast ~= nil then
+			if runtime_config.timers[row_name] == nil then
+				runtime_config.timers[row_name] = {};
+			end
+			runtime_config.timers[row_name][macro.macro_id] = os.time() + tonumber(macro.recast);
+		end
+	end
+	imgui.PopID(row_name .. macro.macro_id);
 end
 
 macropanel.draw_timer = function(runtime_config, macro, row_name)
