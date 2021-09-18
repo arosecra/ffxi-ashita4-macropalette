@@ -6,8 +6,10 @@ addon.desc      = 'A small macropalette always on screen';
 addon.link      = 'https://github.com/arosecra/ffxi-ashita4-macropalette';
 
 local imgui = require('imgui');
-local common = require('common');
+require('common');
 
+local command = require('command');
+local keyhandler = require('keyhandler');
 local macropanel = require('macropanel');
 local libs2imgui = require('org_github_arosecra/imgui');
 local libs2config = require('org_github_arosecra/config');
@@ -25,6 +27,10 @@ local runtime_config = {
 	timers                  = {}
 };
 
+local macro_palette_panels = {
+	["Macros"] = macropanel
+};
+
 ashita.events.register('load', 'macropalette_load_cb', function ()
     print("[macropalette] 'load' event was called.");
 	AshitaCore:GetConfigurationManager():Load(addon.name, 'macropalette\\macropalette.ini');
@@ -39,6 +45,22 @@ ashita.events.register('command', 'macropalette_command_cb', function (e)
     end
     print("[macropalette] Blocking '/mp' command!");
     e.blocked = true;
+
+	local args = e.command:argsquoted();
+
+	if args[2] == 'button_from_controller' then
+		local row_number = keyhandler.get_current_row_number()
+		if row_number == 0 then
+			command.set_tab(runtime_config, tonumber(args[3]));
+		else
+			command.run_macro(runtime_config, row_number, tonumber(tonumber(args[3])));
+		end
+	end
+
+	if args[2] == 'help' then
+		command.help();
+	end
+
 end);
 
 ashita.events.register('plugin_event', 'macropalette_plugin_event_cb', function (e)
@@ -49,32 +71,8 @@ ashita.events.register('plugin_event', 'macropalette_plugin_event_cb', function 
     e.blocked = true;
 end);
 
-ashita.events.register('key_data', 'key_data_callback1', function (e)
-    --print(e.key)
-    if (e.key == 29 or e.key == 56 or e.key == 157 or e.key == 184) then
-        e.blocked = true;
-    end
-end);
-
-ashita.events.register('key_state', 'key_state_callback1', function (e)
-    local ffi = require('ffi');
-    local ptr = ffi.cast('uint8_t*', e.data_raw);
-
-    -- Block left-arrow key presses.. (Blocks game input; repeating.)
-    if (ptr[29] ~= 0) then
-        ptr[29] = 0;
-    end
-    if (ptr[184] ~= 0) then
-        ptr[184] = 0;
-    end
-    if (ptr[56] ~= 0) then
-        ptr[56] = 0;
-    end
-    if (ptr[157] ~= 0) then
-        ptr[157] = 0;
-    end
-end);
-
+ashita.events.register('key_data', 'key_data_callback1', keyhandler.key_data);
+ashita.events.register('key_state', 'key_state_callback1', keyhandler.key_state);
 
 ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (isRenderingBackBuffer)
 
@@ -139,13 +137,8 @@ ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
 			end);
 			imgui.TableNextRow(0,0);
 
-			if runtime_config.tab_type == "Macros" then
-				macropanel.draw_table(runtime_config)
-			end
-
-			if runtime_config.tab_type == "Macros" then
-				macropanel.draw_after_table(runtime_config)
-			end
+			macro_palette_panels[runtime_config.tab_type].draw_table(runtime_config);
+			macro_palette_panels[runtime_config.tab_type].draw_after_table(runtime_config);
 
 			imgui.EndTable();
 		end
