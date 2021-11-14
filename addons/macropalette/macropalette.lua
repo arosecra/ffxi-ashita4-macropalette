@@ -21,7 +21,7 @@ local macropalette_window = {
 };
 
 local runtime_config = {
-	current_row = 1,
+	current_row = 0,
 	tab                     = "Combat",
 	tab_type                = "Macros",
 	timers                  = {}
@@ -49,11 +49,13 @@ ashita.events.register('command', 'macropalette_command_cb', function (e)
 	local args = e.command:argsquoted();
 
 	if args[2] == 'button_from_controller' then
-		local row_number = keyhandler.get_current_row_number()
+		local row_number = runtime_config.current_row;
 		if row_number == 0 then
 			command.set_tab(runtime_config, tonumber(args[3]));
 		else
-			command.run_macro(runtime_config, row_number, tonumber(tonumber(args[3])));
+			print(args[3])
+			print(row_number)
+			command.run_macro(runtime_config, row_number, tonumber(args[3]));
 		end
 	end
 
@@ -71,8 +73,13 @@ ashita.events.register('plugin_event', 'macropalette_plugin_event_cb', function 
     e.blocked = true;
 end);
 
-ashita.events.register('key_data', 'key_data_callback1', keyhandler.key_data);
-ashita.events.register('key_state', 'key_state_callback1', keyhandler.key_state);
+ashita.events.register('key_data', 'key_data_callback1', function(e) 
+	keyhandler.key_data(e, runtime_config);
+end);
+
+ashita.events.register('key_state', 'key_state_callback1', function(e)
+	keyhandler.key_state(e, runtime_config);
+end);
 
 ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (isRenderingBackBuffer)
 
@@ -112,7 +119,7 @@ ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
 
 	local buttonsperrow = tonumber(AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "buttonsperrow"));
     if imgui.Begin(addon.name, macropalette_window.is_open, windowStyleFlags) then
-		if imgui.BeginTable("t3", 8+1, tableStyleFlags, 0, 0) then
+		if imgui.BeginTable("t5", 8+1, tableStyleFlags, 0, 0) then
 			imgui.TableNextColumn();
 			imgui.Text("Pages");
 			imgui.TableNextColumn();
@@ -137,9 +144,10 @@ ashita.events.register('d3d_present', 'macropalette_present_cb', function ()
 			end);
 			imgui.TableNextRow(0,0);
 
-			macro_palette_panels[runtime_config.tab_type].draw_table(runtime_config);
-			macro_palette_panels[runtime_config.tab_type].draw_after_table(runtime_config);
-
+			if macro_palette_panels[runtime_config.tab_type] ~= nil then
+				macro_palette_panels[runtime_config.tab_type].draw_table(runtime_config);
+				macro_palette_panels[runtime_config.tab_type].draw_after_table(runtime_config);
+			end
 			imgui.EndTable();
 		end
 
