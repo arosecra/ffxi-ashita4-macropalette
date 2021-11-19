@@ -34,7 +34,7 @@ command.run_macro = function(runtime_config, row_number, column_number)
 		local macro_ids = macrolocator.get_active_macro_ids(runtime_config, rows[row_number]);
 		local macro_id = macro_ids[column_number];
 		local macro = macros_configuration.get_macro_by_id(macro_id)
-		macrorunner.run_macro(macro, { Name = runtime_config.tab});
+		macrorunner.run_macro(macro, { Name = rows[row_number]});
 	end
 end
 
