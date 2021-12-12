@@ -97,8 +97,8 @@ ashita.events.register('d3d_beginscene', 'd3d_beginscene_callback1', function (i
 	local party = memoryManager:GetParty();
 
 	for i=0,5 do
-		local mainjob = jobs[party:GetMemberMainJob(i)];
-		local subjob = jobs[party:GetMemberSubJob(i)];
+		local mainjob = AshitaCore:GetResourceManager():GetString("jobs.names_abbr", party:GetMemberMainJob(i));
+		local subjob = AshitaCore:GetResourceManager():GetString("jobs.names_abbr", party:GetMemberSubJob(i));
 		local name = party:GetMemberName(i);
 		runtime_config[name .. ".MainJob"] = mainjob;
 		runtime_config[name .. ".SubJob"] = subjob;
