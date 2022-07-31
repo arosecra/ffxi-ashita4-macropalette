@@ -23,8 +23,8 @@ command.set_tab = function(runtime_config, tab_number)
 	if tab_names[tab_number] ~= nil then
 		runtime_config.tab = string.trim(tab_names[tab_number]);
 		runtime_config.tab_type = AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "tabs.type." .. string.trim(runtime_config.tab));
-		print(runtime_config.tab)
-		print(runtime_config.tab_type)
+		--print(runtime_config.tab)
+		--print(runtime_config.tab_type)
 	end
 end
 
