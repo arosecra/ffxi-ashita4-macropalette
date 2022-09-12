@@ -32,7 +32,7 @@ local macro_palette_panels = {
 };
 
 ashita.events.register('load', 'macropalette_load_cb', function ()
-    print("[macropalette] 'load' event was called.");
+    -- print("[macropalette] 'load' event was called.");
 	AshitaCore:GetConfigurationManager():Load(addon.name, 'macropalette\\macropalette.ini');
 	macros_configuration.load();
 	runtime_config.tab = AshitaCore:GetConfigurationManager():GetString(addon.name, "settings", "defaulttab");
@@ -43,7 +43,7 @@ ashita.events.register('command', 'macropalette_command_cb', function (e)
     if (not e.command:startswith('/macropalette') and not e.command:startswith('/mp')) then
 		return;
     end
-    print("[macropalette] Blocking '/mp' command!");
+    -- print("[macropalette] Blocking '/mp' command!");
     e.blocked = true;
 
 	local args = e.command:argsquoted();
@@ -53,8 +53,8 @@ ashita.events.register('command', 'macropalette_command_cb', function (e)
 		if row_number == 0 then
 			command.set_tab(runtime_config, tonumber(args[3]));
 		else
-			print(args[3])
-			print(row_number)
+			-- print(args[3])
+			-- print(row_number)
 			command.run_macro(runtime_config, row_number, tonumber(args[3]));
 		end
 	end
