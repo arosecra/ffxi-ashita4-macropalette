@@ -50,12 +50,28 @@ ashita.events.register('command', 'macropalette_command_cb', function (e)
 
 	if args[2] == 'button_from_controller' then
 		local row_number = runtime_config.current_row;
+		local column = args[3]
 		if row_number == 0 then
-			command.set_tab(runtime_config, tonumber(args[3]));
+			command.set_tab(runtime_config, tonumber(column));
 		else
 			-- print(args[3])
 			-- print(row_number)
-			command.run_macro(runtime_config, row_number, tonumber(args[3]));
+			command.run_macro(runtime_config, row_number, tonumber(column));
+		end
+	end
+	
+	if args[2] == 'run' then
+		runtime_config.current_row = tonumber(args[3])
+		local column = args[4]
+		
+		local row_number = runtime_config.current_row;
+		if row_number == 0 then
+			command.set_tab(runtime_config, tonumber(column));
+		else
+			-- print(args[3])
+			-- print(args[4])
+			-- print(row_number)
+			command.run_macro(runtime_config, row_number, tonumber(column));
 		end
 	end
 
